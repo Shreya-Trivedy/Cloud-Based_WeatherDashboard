@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <!-- 引入 Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- 引入 Leaflet Timeline CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.timeline@1.2.1/dist/leaflet.timeline.min.css" />
+
+    <link rel="stylesheet" href="/css/style.css"> <!-- Link to your CSS file -->
+    <link rel="stylesheet" href="/leaflet/leaflet.css">
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+            integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+            crossorigin=""></script>
+
+    <script src="leaflet-timeline-slider.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.timeline@1.2.1/dist/leaflet.timeline.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.timeline@1.2.1/dist/leaflet.timeline.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-windy/leaflet-windy.js"></script>
+    <!-- 引入 Leaflet Timeline JS -->
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.timeline@1.2.1/dist/leaflet.timeline.min.js"></script>
+    <!-- 引入 Leaflet Control Geocoder -->
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <style>
+        .logo{
+            font: 500 24px '优设标题黑';
+            padding: 15px 50px;
+            margin: 0 30px;
+            border: none;
+            border-radius: 10em;
+            display: flex;
+            list-style: none;
+            background-color: #5acec6;
+            box-shadow:  23px 23px 46px #46a19a,
+            -23px -23px 46px #6efbf2;
+            color: rgb(70, 100, 100);
+        }
+        .nav {
+            margin: 0 10px;
+            border: none;
+            border-radius: 10em;
+            display: flex;
+            list-style: none;
+            background-color: #5acec6;
+            box-shadow:  23px 23px 46px #46a19a,
+            -23px -23px 46px #6efbf2;
+            padding: 10px;
+        }
+        .nav li a{
+            position: relative;
+            padding: 15px 50px;
+            font: 500 24px '优设标题黑';
+            border:none;
+            outline: none;
+            color: rgb(70, 100, 100);
+            display: inline-block;
+            text-decoration: none;
+            z-index: 3;
+        }
+        .nav li a.active{
+            background-color: #106e77;
+            color: #fff;
+        }
+        .slide1,
+        .slide2{
+            position: absolute;
+            display: inline-block;
+            height: 60px;
+            border-radius: 10em;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1.05);
+        }
+        .slide1{
+            background-color: #ffc069;
+            z-index: 2;
+        }
+        .slide2{
+            opacity: 0;
+            background-color: #ffa940;
+            z-index: 1;
+            box-shadow: 0 0 20px #ffd591 inset;
+        }
+        .squeeze{
+            transform: scale(0.9);
+        }
+
+    </style>
+
+</head>
+<body>
+<!-- Header Section -->
+<header>
+    <nav>
+
+        <div class="logo">
+            Weather Dashboard
+        </div>
+
+        <ul class="nav">
+            <li class="slide1"></li>
+            <li class="slide2"></li>
+            <li><a href="/">Home</a></li>
+            <li><a href="/current">Current</a></li>
+            <li><a href="/map">Map</a></li>
+
+            {{#if isLoggedIn}}
+                <li><a href="/customise">Customise</a></li>
+                <li><a href="/logout">Logout</a></li>
+            {{else}}
+                <li><a href="/register">Register</a></li>
+                <li><a href="/login">Login</a></li>
+            {{/if}}
+
+        </ul>
+    </nav>
+</header>
+
+<!-- Main Content Section -->
+<main>
+{{{body}}}
+</main>
+
+<!-- Footer Section -->
+<footer>
+    <p>&copy; 2024 Weather Dashboard. All rights reserved.</p>
+</footer>
+
+<!-- JavaScript Files -->
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script> <!-- Leaflet.js for map -->
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="/wind-js-leaflet-master/dist/wind-js-leaflet.js"></script>
+<script src="/js/main.js"></script> <!-- Link to your JS file -->
+<script>
+    $(document).ready(function() {
+        // 设置鼠标点击事件
+        $(".nav a").on("click", function () {
+            var position = $(this).parent().position();
+            var width = $(this).parent().width();
+            $(".nav .slide1").css({opacity: 1, left: +position.left, width: width});
+        });
+
+        // 设置鼠标悬停事件
+        $(".nav a").on("mouseover", function () {
+            var position = $(this).parent().position();
+            var width = $(this).parent().width();
+            $(".nav .slide2").css({opacity: 1, left: +position.left, width: width}).addClass("squeeze");
+        });
+
+        // 设置鼠标移出事件
+        $(".nav a").on("mouseout", function () {
+            $(".nav .slide2").css({opacity: 0}).removeClass("squeeze");
+        });
+
+        // 页面加载时，设置当前活动按钮的滑动条位置
+        var activeLink = $(".nav a.active");
+        if (activeLink.length > 0) {
+            var position = activeLink.parent("li").position();
+            var width = activeLink.parent("li").width();
+            $(".nav .slide1").css({left: +position.left, width: width});
+        }
+    });
+
+</script>
+</html>
